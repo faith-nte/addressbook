@@ -21,37 +21,57 @@ pipeline {
     }
 }
 
-stage('Install Dependencies') {
-    agent {
-        docker {
-            image 'node:16'
-            reuseNode true
-        }
-    }
-    steps {
-        sh 'cd frontend && npm ci --no-fund --no-audit'
-        sh 'cd backend && npm ci --no-fund --no-audit'
-        sh 'cd tests && npm ci --no-fund --no-audit'
-    }
-}
+pipeline {
+    agent any
 
-stage('Run Tests') {
-    steps {
-        script {
-            sh 'cd tests && npm test'
-        }
+    tools {
+        nodejs 'NodeJS'
     }
+
+    environment {
+        MAILGUN_RECIPIENT = 'faithskool4u@gmail.com'
+    }
+
+    stages {
+        stage('Install Dependencies') {
+            steps {
+                echo 'Installing dependencies for frontend, backend, and tests...'
+                sh 'cd frontend && npm ci --no-fund --no-audit'
+                sh 'cd backend && npm ci --no-fund --no-audit'
+                sh 'cd tests && npm ci --no-fund --no-audit'
+            }
+        }
+
+        // Optional: Uncomment when ready to run tests
+        // stage('Run Tests') {
+        //     steps {
+        //         echo 'Running tests...'
+        //         sh 'cd tests && npm test'
+        //     }
+        //     post {
+        //         failure {
+        //             echo 'Tests failed but continuing the pipeline.'
+        //         }
+        //     }
+        // }
+
+        // Optional: Uncomment when ready to build frontend
+        // stage('Build Frontend (React + Vite)') {
+        //     steps {
+        //         echo 'Building frontend...'
+        //         sh 'cd frontend && npm run build'
+        //     }
+        // }
+
+        // Optional: Add more stages like Docker build, Terraform deploy, etc.
+    }
+
     post {
-        failure {
-            echo 'Tests failed but continuing the pipeline'
+        success {
+            echo 'Pipeline completed successfully.'
         }
-    }
-}
-
-stage('Build Frontend (React + Vite)') {
-    steps {
-        script {
-            sh 'cd frontend && npm run build'
+        failure {
+            echo 'Pipeline failed.'
         }
     }
 }
