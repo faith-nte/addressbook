@@ -8,12 +8,6 @@ pipeline {
     }
 
     stages {
-        stage('Clone Repository') {
-            steps {
-                git branch: 'jenkins', url: 'git@github.com:faith-nte/adressbook.git'
-            }
-        }
-
         stage('Install Dependencies') {
             agent {
                 docker {
