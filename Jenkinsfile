@@ -1,20 +1,16 @@
 pipeline {
     agent any
+
     tools {
         nodejs 'NodeJS'
     }
+
     environment {
         MAILGUN_RECIPIENT = 'faithskool4u@gmail.com'
     }
 
     stages {
         stage('Install Dependencies') {
-            agent {
-                docker {
-                    image 'node:16'
-                    reuseNode true
-                }
-            }
             steps {
                 sh 'cd frontend && npm ci'
                 sh 'cd backend && npm ci'
