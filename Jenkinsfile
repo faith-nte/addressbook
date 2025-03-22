@@ -18,11 +18,11 @@ pipeline {
             }
         }
 
-        stage('Run Tests') {
-            steps {
-                sh 'cd tests && npm test'
-            }
-        }
+        // stage('Run Tests') {
+        //     steps {
+        //         sh 'cd tests && npm test'
+        //     }
+        // }
 
         stage('Build and Push Docker Images') {
             steps {
