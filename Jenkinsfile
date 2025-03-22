@@ -1,8 +1,10 @@
 pipeline {
     agent any
+
     tools {
         nodejs 'NodeJS' // This must match a NodeJS installation name in Jenkins
     }
+
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
         AWS_CREDENTIALS = credentials('aws-credentials')
@@ -18,19 +20,28 @@ pipeline {
                 git branch: 'jenkins', url: 'https://github.com/faith-nte/addressbook.git'
             }
         }
-    }
-}
 
-stage('Install Dependencies') {
-    agent {
-        docker {
-            image 'node:16'
-            reuseNode true
+        stage('Install Dependencies') {
+            agent {
+                docker {
+                    image 'node:16'
+                    reuseNode true
+                }
+            }
+            steps {
+                sh 'cd frontend && npm ci --no-fund --no-audit'
+                sh 'cd backend && npm ci --no-fund --no-audit'
+                sh 'cd tests && npm ci --no-fund --no-audit'
+            }
         }
     }
-    steps {
-        sh 'cd frontend && npm ci --no-fund --no-audit'
-        sh 'cd backend && npm ci --no-fund --no-audit'
-        sh 'cd tests && npm ci --no-fund --no-audit'
+
+    post {
+        success {
+            echo 'Build completed successfully!'
+        }
+        failure {
+            echo 'Build failed. Please check logs.'
+        }
     }
 }
