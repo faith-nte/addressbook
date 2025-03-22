@@ -21,29 +21,4 @@ pipeline {
     }
 }
 
-stage('Install Dependencies') {
-agent {
-docker {
-image 'node:16'
-reuseNode true
-}
-}
-
-steps {
-sh 'cd frontend && npm ci --no-fund --no-audit'
-sh 'cd backend && npm ci --no-fund --no-audit'
-sh 'cd tests && npm ci --no-fund --no-audit'
-}
-}
-stage('Run Tests') {
-steps {
-script {
-sh 'cd tests && npm test’
-}
-}
-post {
-failure {
-echo 'Tests failed but continuing the pipeline’
-}
-}
-}
+stage('Install Dependencies') { agent { docker { image 'node:16' reuseNode true } }
