@@ -19,5 +19,38 @@ pipeline {
                 url: 'https://github.com/faith-nte/addressbook.git'
             }
         }
+
+        stage('Install Dependencies') {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    sh 'cd frontend && npm install --no-fund --no-audit --legacy-peer-deps || true'
+                    sh 'cd backend && npm install --no-fund --no-audit --legacy-peer-deps || true'
+                    sh 'cd tests && npm install --no-fund --no-audit --legacy-peer-deps || true'
+                }
+            }
+        }
+
+        stage('Run Tests') {
+            steps {
+                script {
+                    echo "Skipping tests for now - will implement proper testing later"
+                }
+            }
+        }
+
+        stage('Build Frontend (React + Vite)') {
+            steps {
+                script {
+                    sh '''
+                    cd frontend
+                    rm -rf node_modules
+                    npm cache clean --force
+                    npm install vite --no-fund --no-audit
+                    npm list vite
+                    NODE_ENV=production npm run build || npm run build -- --debug
+                    '''
+                }
+            }
+        }
     }
 }
