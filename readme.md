@@ -1,0 +1,92 @@
+AddressBook Application
+A guide for building a full-stack application for managing contacts, built with React, Express, and PostgreSQL.
+
+Project Structure:
+
+Frontend (React + Vite)
+Backend (Express.js)
+Tests (Vitest)
+PostgreSQL running in Docker
+Project Overview
+We will build an Address Book App with a React frontend (Vite), an Express.js backend, and a PostgreSQL database running inside a Docker container.
+
+The application will have two pages:
+
+Form Input Page – Users can enter name, email, phone, and address.
+Data Display Page – Lists all saved contacts.
+Project Structure
+addressbook/
+│── frontend/ # React frontend (Vite)
+│ │── public
+│ │── src
+│ │ │── AddContact.jsx
+│ │ │── App.css
+│ │ │── ContactList.jsx
+│ │ │── index.css
+│ │ │── main.jsx
+│ │── eslint.config.js
+│ │── index.html
+│ │── package-lock.json
+│ │── package.json
+│ │── postcss.config.js
+│ │── README.md
+│ │── tailwind.config.js
+│ │── vite.config.js
+│── backend/ # Express.js backend with PostgreSQL
+│ │── .env
+│ │── docker-compose.yml
+│ │── package-lock.json
+│ │── package.json
+│ │── server.js
+│── tests/ # Vitest test scripts
+│ │── backend
+│ │ │── api.test.js
+│ │── frontend
+│ │ │── AddContact.test.jsx
+│ │ │── ContactList.test.jsx
+│ │── integration
+│ │ │── app.test.js
+│ │── package-lock.json
+│ │── package.json
+│ │── test.js
+│ │── README.md
+│── infra/ # Terraform script
+│ │── main.tf
+│── docker-compose.yml # Docker configuration for PostgreSQL
+│── .env # Environment variables
+│── package.json # Project dependencies
+│── Jenkinsfile
+│── deploy_blue_green.sh
+│── README.md # Project documentation
+Clone the Repo
+Clone the Repo
+Ensure you have Docker engine installed and running
+Run PostgreSQL:
+cd backend
+docker-compose up -d
+Run the backend (this will hug the terminal):
+node server.js
+Run React frontend (on a separate terminal):
+cd frontend
+npm run dev
+Run Test with Vitest (optional):
+cd tests
+
+# Run all tests:
+
+npm test
+
+# Run specific test groups:
+
+npm run test:frontend
+npm run test:backend
+npm run test:integration
+
+# Run tests with UI and watch mode:
+
+npm run test:ui
+
+# Generate test coverage
+
+npm run test:coverage
+Open the app on a browser
