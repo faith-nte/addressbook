@@ -55,7 +55,6 @@ pipeline {
         }
         */
 
-    stages {
         stage('Build and Push Docker Images') {
             steps {
                 script {
