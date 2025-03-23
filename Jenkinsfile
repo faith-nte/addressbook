@@ -56,7 +56,7 @@ pipeline {
         stage('Build and Push Docker Images') {
             steps {
                 script {
-                    sh 'docker build -t my-frontend ./frontend'
+                    sh 'docker build -t my-frontend -f Dockerfile.jenkins .'
                     sh 'docker tag my-frontend my-dockerhub-user/my-frontend:latest'
                     sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
                     sh 'docker push my-dockerhub-user/my-frontend:latest'
