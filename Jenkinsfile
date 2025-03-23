@@ -1,8 +1,10 @@
 pipeline {
     agent any
+
     tools {
-        nodejs 'NodeJS' // This must match a NodeJS installation name in Jenkins
+        nodejs 'NodeJS' // This must match a NodeJS installation name configured in Jenkins
     }
+
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('docker-hub-credentials')
         AWS_CREDENTIALS = credentials('aws-credentials')
@@ -13,11 +15,9 @@ pipeline {
     }
 
     stages {
-        
         stage('Clone Repository') {
             steps {
-                git branch: 'jenkins', 
-                url: 'https://github.com/faith-nte/addressbook.git'
+                git branch: 'jenkins', url: 'https://github.com/faith-nte/adressbook.git'
             }
         }
 
@@ -43,45 +43,80 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    cd frontend
-                    rm -rf node_modules
-                    npm cache clean --force
-                    npm install vite --no-fund --no-audit
-                    npm list vite
-                    NODE_ENV=production npm run build || npm run build -- --debug
+                        cd frontend
+                        rm -rf node_modules
+                        npm cache clean --force
+                        npm i vite --no-fund --no-audit
+                        npm list vite
+                        NODE_ENV=production npm run build || npm run build -- --debug
                     '''
                 }
             }
         }
 
-      /*  stage('Build and Push Docker Images') {
+        stage('Build and Push Docker Images') {
             steps {
                 script {
-                    sh 'docker build -t my-frontend ./frontend'
-                    sh 'docker tag my-frontend my-dockerhub-user/my-frontend:latest'
-                    sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
-                    sh 'docker push my-dockerhub-user/my-frontend:latest'
-                    sh 'docker build -t my-backend ./backend'
-                    sh 'docker tag my-backend my-dockerhub-user/my-backend:latest'
-                    sh 'docker push my-dockerhub-user/my-backend:latest'
+                    echo "Skipping Docker build steps due to configuration issues"
+                    // sh 'docker build -t my-frontend ./frontend'
+                    // sh 'docker tag my-frontend my-dockerhub-user/my-frontend:latest'
+                    // sh 'echo $DOCKER_HUB_CREDENTIALS_PSW | docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin'
+                    // sh 'docker push my-dockerhub-user/my-frontend:latest'
+
+                    // sh 'docker build -t my-backend ./backend'
+                    // sh 'docker tag my-backend my-dockerhub-user/my-backend:latest'
+                    // sh 'docker push my-dockerhub-user/my-backend:latest'
                 }
             }
         }
 
-        /*
         stage('Deploy with Terraform') {
             steps {
                 script {
+                    sh 'cd infra && export AWS_ACCESS_KEY_ID=$AWS_CREDENTIALS_USR && export AWS_SECRET_ACCESS_KEY=$AWS_CREDENTIALS_PSW && terraform init && terraform apply -auto-approve'
+                }
+            }
+        }
+
+        stage('Blue-Green Deployment') {
+            steps {
+                script {
+                    sh 'export AWS_ACCESS_KEY_ID=$AWS_CREDENTIALS_USR && export AWS_SECRET_ACCESS_KEY=$AWS_CREDENTIALS_PSW && bash deploy_blue_green.sh'
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            script {
+                withCredentials([string(credentialsId: 'mailgun-api-key', variable: 'MG_API_KEY'), 
+                                string(credentialsId: 'mailgun-domain', variable: 'MG_DOMAIN')]) {
                     sh '''
-                    cd infra
-                    export AWS_ACCESS_KEY_ID=$AWS_CREDENTIALS_USR
-                    export AWS_SECRET_ACCESS_KEY=$AWS_CREDENTIALS_PSW
-                    terraform init
-                    terraform apply -auto-approve
+                    curl -s --user "api:${MG_API_KEY}" \
+                        https://api.mailgun.net/v3/${MG_DOMAIN}/messages \
+                        -F from="DevForge Notifications <dev@devforge.cc>" \
+                        -F to="${MAILGUN_RECIPIENT}" \
+                        -F subject="Jenkins Build Notification" \
+                        -F text="Your Jenkins job has completed successfully."
                     '''
                 }
             }
         }
-        */
+        failure {
+            script {
+                withCredentials([string(credentialsId: 'mailgun-api-key', variable: 'MG_API_KEY'), 
+                                string(credentialsId: 'mailgun-domain', variable: 'MG_DOMAIN')]) {
+                    sh '''
+                    curl -s --user "api:${MG_API_KEY}" \
+                        https://api.mailgun.net/v3/${MG_DOMAIN}/messages \
+                        -F from="DevForge Notifications <dev@devforge.cc>" \
+                        -F to="${MAILGUN_RECIPIENT}" \
+                        -F subject="Jenkins Build Notification" \
+                        -F text="Your Jenkins job has failed. Please check the logs."
+                    '''
+                }
+            }
+        }
     }
 }
