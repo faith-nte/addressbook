@@ -20,7 +20,7 @@ pipeline {
                 url: 'https://github.com/faith-nte/addressbook.git'
             }
         }
-/*
+
         stage('Install Dependencies') {
             steps {
                 timeout(time: 30, unit: 'MINUTES') {
