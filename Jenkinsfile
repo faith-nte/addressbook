@@ -17,7 +17,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'jenkins', url: 'https://github.com/faith-nte/adressbook.git'
+                git branch: 'jenkins', url: 'https://github.com/faith-nte/addressbook.git'
             }
         }
 
