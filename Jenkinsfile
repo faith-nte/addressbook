@@ -13,7 +13,7 @@ pipeline {
     }
 
     stages {
-        /*
+        
         stage('Clone Repository') {
             steps {
                 git branch: 'jenkins', 
