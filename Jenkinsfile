@@ -13,7 +13,7 @@ pipeline {
     }
 
     stages {
-        /*
+        
         stage('Clone Repository') {
             steps {
                 git branch: 'jenkins', 
@@ -55,7 +55,7 @@ pipeline {
         }
         */
 
-        stage('Build and Push Docker Images') {
+      /*  stage('Build and Push Docker Images') {
             steps {
                 script {
                     sh 'docker build -t my-frontend ./frontend'
