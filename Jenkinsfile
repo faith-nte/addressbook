@@ -13,6 +13,7 @@ pipeline {
     }
 
     stages {
+        /*
         stage('Clone Repository') {
             steps {
                 git branch: 'jenkins', 
@@ -52,6 +53,7 @@ pipeline {
                 }
             }
         }
+        */
 
         stage('Build and Push Docker Images') {
             steps {
@@ -67,6 +69,7 @@ pipeline {
             }
         }
 
+        /*
         stage('Deploy with Terraform') {
             steps {
                 script {
@@ -80,5 +83,6 @@ pipeline {
                 }
             }
         }
+        */
     }
 }
