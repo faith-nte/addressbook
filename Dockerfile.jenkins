@@ -2,3 +2,5 @@ FROM jenkins/jenkins:lts
 USER root
 RUN apt-get update && apt-get install -y docker.io
 USER jenkins
+# Ensure group 984 matches your host's 'docker' group
+RUN groupadd -g 984 docker && usermod -aG docker jenkins
